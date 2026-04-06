@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - image: nginx:1.24
+          name: nginx
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 50m
+              memory: 100Mi
+            limits:
+              cpu: 100m
+              memory: 150Mi
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+            initialDelaySeconds: 10
+          startupProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+            initialDelaySeconds: 10
+          #Монтирование volume с именем config внутрь файловой системы контейнера
+          volumeMounts:
+            #Ссылка на volume, который мы определили ниже
+            - name: config
+              #Путь, куда разместить конфигурацию
+              mountPath: /etc/nginx/conf.d/
+      #Пример использования config map с volumes
+      #Создается volume, который берет данные из my-configmap
+      volumes:
+        #Задаем имя volume, чтобы ссылаться на него в контейнерах этого манифеста
+        - name: config
+          configMap:
+            #Имя config map, которую нужно брать (и затем помещать в /etc... как указано выше)
+            #имя и сам конфиг задается в файле configmap.yaml
+            name: my-configmap

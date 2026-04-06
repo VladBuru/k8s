@@ -1,0 +1,16 @@
+#версия
+apiVersion: v1
+#тип
+kind: Pod
+metadata:
+  #название пода
+  name: my-pod
+spec:
+  containers:
+    #описание контейнера конфигурации. Образ из dockerhub
+    - image: nginx:1.12
+      name: nginx
+      ports:
+        #внутри данного контейнера приложение слушает на порту 80.
+        #То есть мы запускаем nginx и он будет ждать http запрос на порту 80
+        - containerPort: 80

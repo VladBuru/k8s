@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - image: nginx:1.24
+          name: nginx
+          ports:
+            - containerPort: 80
+          resources:
+            #Минимально выделяемые ресурсы
+            requests:
+              #50m - 50 millicpu, 1 cpu = 1000 millicpu. 50 мили ядер
+              cpu: 50m
+              #100Mi = 100Mb
+              memory: 100Mi
+            #Максимально допустимые потребляемые ресурсы (ограничитель при нагрузке)
+            limits:
+              cpu: 100m
+              memory: 150Mi
+          readinessProbe:
+            #Сколько раз проба может провалиться
+            failureThreshold: 3
+            #По какому пути делать запросы для проб. В данном случае по корневому
+            httpGet:
+              path: /
+              port: 80
+            #С какой периодичностью делать пробы
+            periodSeconds: 10
+            #Количество успешных проб, чтобы сбросить счетчик failureThreshold
+            successThreshold: 1
+            #Сколько времени ждать ответа от контейнера (приложения)
+            timeoutSeconds: 1
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+            #Сколько подождать после старта контейнера перед пробами
+            initialDelaySeconds: 10
+          startupProbe:
+            httpGet:
+              path: /
+              port: 80

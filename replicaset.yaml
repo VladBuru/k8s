@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: my-replicaset
+spec:
+  #создаем 2 реплики пода
+  replicas: 2
+  #сам селектор, который следит за подом my-app и поддерживает
+  #количество поднятых реплик этого пода (в данном случае 2)
+  selector:
+    matchLabels:
+      app: my-app
+  #шаблон, по которому создаются реплики
+  template:
+    metadata:
+      #label который присваивается при создании пода, что-то типа метки
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - image: nginx:1.24
+          name: nginx
+          ports:
+            - containerPort: 80
