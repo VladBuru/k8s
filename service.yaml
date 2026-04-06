@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  ports:
+    #Порт, на котором сервис принимает запросы
+    - port: 80
+      #Порт подов, куда перенаправлять трафик
+      targetPort: 80
+  selector:
+    #Обслуживает и перенаправляет трафик на поды с label my-app
+    app: my-app
+  type: ClusterIP
