@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  #Указываем, что этот Ingress будет обрабатываться контроллером с именем nginx в кластере.
+  #Это как бы метка для контроллера.
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  ingressClassName: nginx
+  rules:
+      #Доменное имя, на которое приходят запросы извне, например http://kubernetes.docker.internal/
+    - host: kubernetes.docker.internal
+      http:
+        #Описываем маршрутизацию
+        paths:
+            #Тип сопоставления пути
+          - pathType: Prefix
+            #Запросы, которые начинаются с /* отправляются на my-service с портом 80
+            path: /
+            backend:
+              service:
+                name: my-service
+                port:
+                  number: 80
