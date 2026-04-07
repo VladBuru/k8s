@@ -1,0 +1,34 @@
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoScaler
+metadata:
+  name: my-app-vpa
+spec:
+  #Для какого контейнера и с каким именем и версией
+  #VPA будет вести управление ресурсами
+  targetRef:
+    apiVersion: "apps/v1"
+    kind: Deployment
+    name: my-app
+  updatePolicy:
+    #Режим AUTO. В режиме AUTO VPA автоматически перезапускает
+    #поды с новыми ресурсами по мере необходимости
+    #Режим OFF - только рекомендации без изменения подов.
+    #Для стресс тестов и понимания, какие оптимальные значения выставлять
+    #Режим Initial - настройка только при создании пода
+    #Режим Recreate - принудительный перезапуск для применения изменений
+    updateMode: "Auto"
+  resourcePolicy:
+    #Правила для контейнеров, указываем * чтобы применялось ко всем контейнерам
+    #пода (в одном поде может быть несколько контейнеров.
+    containerPolicies:
+      - containerName: "*"
+        #Минимальное количество ресурсов
+        minAllowed:
+          cpu: "100m"
+          memory: "128Mi"
+        #Максимальное количество ресурсов
+        maxAllowed:
+          cpu: "300m"
+          memory: "512Mi"
+        #По каким ресурсам VPA будет вести анализ
+        controllerResources: ["cpu", "memory"]

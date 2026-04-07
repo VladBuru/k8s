@@ -1,0 +1,46 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: web-app-hpa
+  namespace: production
+spec:
+  #Указываем какой объект кубера мы будем масштабировать, его версию и имя
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: web-app
+  #Минимальное количество реплик при масштабировании
+  #Если нет нагрузки - HPA держит минимум 2 реплики
+  minReplicas: 2
+  #Максимально количество реплик
+  #При нагрузке HPA может поднять максимум 10 реплик
+  maxReplicas: 10
+  #Список метрик, на основе которых HPA принимает решение
+  #Тайпы здесь выступают как условия со знаком ИЛИ.
+  #т.е. если средняя нагрузка на CPU превысит 50% ИЛИ RPS превысит 500 запросов,
+  #то HPA начнет масштабировать количество реплик
+  metrics:
+      #Внутренняя метрика
+    - type: Resource
+      resource:
+        #Метрика CPU
+        name: cpu
+        target:
+          type: Utilization
+          #Стримится поддерживать нагрузку на CPU в размере 50% от запрошенного лимита
+          averageUtilization: 50
+      #Внешние метрики
+    - type: External
+      external:
+        metric:
+          #Как пример метрика request_per_second (запросов в секунду)
+          name: request_per_second
+          #Селектор для того, чтобы получать метрики с определенных подов по label,
+          #так как подов может быть много
+          selector:
+            matchLabels:
+              app: web-app
+        target:
+          type: AverageValue
+          #HPA следит за тем, чтобы на каждый под приходилось в среднем 500 запросов в секунду
+          averageValue: 500
