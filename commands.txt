@@ -2,7 +2,7 @@
 *** Абстракции k8s ***
 
 * Pod *
-    Хранилище для контейнеров приложений. Хорошая практика иметь 1 контейнеров в 1 поде. Несколько
+    Хранилище для контейнеров приложений. Хорошая практика иметь 1 контейнер в 1 поде. Несколько
     контейнеров в одном поде могут быть в случае, если один без другого работать
     не умеет (в этом случае нет смысла поддерживать работу отдельного пода, если один из этих связанных контейнеров (приложений) упадет)
 
@@ -148,6 +148,8 @@
     default
     kube-system
     kube-public
+
+    неймспейсы лежат в ноде, ноды в кластере
 ====================================================================================================================
 
 
@@ -225,3 +227,19 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main
 
 kubectl describe vpa my-app-vpa
     показывает детальную информацию о VPA а также рекомендует оптимальные настройки min and max ресурсов
+
+kubectl get pods -A --kubeconfig=config_vburula
+    показать все поды по определенному конфигу (в конфиге указывается неймспейс, данные для подключения к определенному кластеру, стенду
+
+kubectl create namespace vburula --dry-run=server --kubeconfig=config_vburula
+    моковое создание неймспейса (проверяем в логах что успешно создали, но по факту не создается), если все норм - создаем
+kubectl create namespace vburula --kubeconfig=config_vburula
+    реальная команда на создание
+kubectl create namespace vburula --dry-run=server -o yaml --kubeconfig=config_vburula
+    команда еще предоставит ответ -o (output) как будет выглядеть манифест
+
+kubectl create -f pod.yaml --kubeconfig=config_vburula
+kubectl get pod --kubeconfig=config_vburula
+kubectl delete pod my-pod --kubeconfig=config_vburula
+kubectl create -f replicaset.yaml --kubeconfig=config_vburula
+и так далее с параметром --kubeconfig=config_vburula вызываем команды чтобы работать с удаленным кубером
