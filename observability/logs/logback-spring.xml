@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
+    <!-- Если Active profile = loki, то задействуется этот блок -->
+    <springProfile name="loki">
+        <!-- Подключаем кастомный appender -->
+        <include resource="loki-appender.xml" />
+        <!-- Логируем INFO и выше -->
+        <root level="INFO">
+            <!--
+            Отправляем логи в LOKI и в CONSOLE,
+            на проде в консоль не пишем.
+            ref - ссылка на аппендер
+            -->
+            <appender-ref ref="LOKI" />
+            <appender-ref ref="CONSOLE" />
+        </root>
+    </springProfile>
+</configuration>

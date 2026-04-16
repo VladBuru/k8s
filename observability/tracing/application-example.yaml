@@ -1,0 +1,12 @@
+
+management:
+  opentelemetry:
+    resource-attributes:
+      application: ${spring.application.name}:${server.port}
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+  observations:
+    annotations:
+      enabled: true

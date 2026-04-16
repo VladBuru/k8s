@@ -1,0 +1,26 @@
+<!-- Этот инклюд вставляется в logback-spring.xml -->
+<included>
+    <!-- Подтягиваем из application.yaml переменные -->
+    <springProperty name="applicationName" source="spring.application.name" defaultValue="myApp"/>
+    <springProperty name="lokiAddress" source="logs.application.loki.base-url" defaultValue="http://localhost:3100"/>
+    <!--
+    Аппендер форматирует и отправляет лог, в нашем случае в LOKI.
+    class = "..." - реализация
+    -->
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <!-- Указываем куда отправлять логи (тут стандартный endpoint Loki) -->
+            <url>${lokiAddress}/loki/api/v1/push</url>
+        </http>
+        <!-- Форматируем лог в JSON для графаны -->
+        <format>
+            <!-- Label - индексы в Loki. Графана ищет по лейблам, а не по тексту как Kibana -->
+            <label>
+                <!-- Индексируемые поля (фильтрация). Слишком много нельзя - будет медленно работать -->
+                <pattern>service_name=${applicationName},host=${HOSTNAME},traceId=%X{traceId:-NONE},level=%level</pattern>
+            </label>
+            <!-- Указываем формат лога - JSON -->
+            <message class="com.github.loki4j.logback.JsonLayout"/>
+        </format>
+    </appender>
+</included>

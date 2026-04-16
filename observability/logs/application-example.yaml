@@ -1,0 +1,5 @@
+logs:
+  application:
+    loki:
+      base-url: http://loki:3100
+
