@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: my-configmap
 data:
-  logs.application.loki.base-url: "http://loki-stack-loki-distributed-gateway.observability:80"
+  LOKI_BASE_URL: "http://loki-stack-loki-distributed-gateway.observability:80"
   OTLP_TRACING_ENDPOINT: "http://tempo.observability:4318/v1/traces"
