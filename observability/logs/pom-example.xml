@@ -1,9 +1,0 @@
-<!--
-Встроенного аппендера для Loki в спринге
-нет - поэтому добавляем зависимость в pom.xml
--->
-<dependency>
-    <groupId>com.github.loki4j</groupId>
-    <artifactId>loki-logback-appender</artifactId>
-    <version>1.5.2</version>
-</dependency>

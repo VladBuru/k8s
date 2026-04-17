@@ -1,4 +1,4 @@
-<!-- Этот инклюд вставляется в logback-spring.xml -->
+<!-- Этот инклюд вставляется в logback-spring-example.xml -->
 <included>
     <!-- Подтягиваем из application.yaml переменные -->
     <springProperty name="applicationName" source="spring.application.name" defaultValue="myApp"/>

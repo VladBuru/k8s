@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: my-app
+  profiles:
+    active: "loki"
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,metrics,env,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+  opentelemetry:
+    resource-attributes:
+      application: ${spring.application.name}:${server.port}
+
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+
+  otlp:
+    tracing:
+      endpoint: ${OTLP_TRACING_ENDPOINT:http://tempo.observability:4318/v1/traces}
+
+  observations:
+    annotations:
+      enabled: true
+
+logs:
+  application:
+    loki:
+      base-url: ${LOKI_BASE_URL:http://loki-stack-loki-distributed-gateway.observability:80}
